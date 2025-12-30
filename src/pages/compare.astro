@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const systems = [
+  {
+    title: 'Analog',
+    pros: ['Lowest cost to start', 'Most ecosystem-agnostic', 'Video quality is good enough to learn'],
+    tradeoffs: ['Lower image clarity', 'More noise in tough RF'],
+  },
+  {
+    title: 'HDZero',
+    pros: ['Digital-like clarity', 'Low latency feel', 'Modular ecosystem'],
+    tradeoffs: ['Costs more than analog', 'More research required'],
+  },
+  {
+    title: 'Walksnail',
+    pros: ['Great image quality', 'Strong value in digital'],
+    tradeoffs: ['Ecosystem lock-in', 'Latency feel varies by pilot'],
+  },
+  {
+    title: 'DJI',
+    pros: ['Best image quality', 'Strong range/penetration'],
+    tradeoffs: ['Most locked-in ecosystem', 'Highest costs'],
+  },
+];
+---
+
+<BaseLayout title="Compare | OpenFPV Kits" description="Quick mental model of analog vs digital systems.">
+  <div class="section-title">
+    <div>
+      <h2>Compare systems</h2>
+    </div>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    {systems.map((system) => (
+      <article class="card space-y-3">
+        <h3 class="text-lg font-semibold">{system.title}</h3>
+        <div>
+          <p class="font-semibold">Why people pick it</p>
+          <ul class="mt-1 list-disc space-y-1 pl-5 text-sm text-[--color-muted]">
+            {system.pros.map((p) => (
+              <li>{p}</li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <p class="font-semibold">Tradeoffs</p>
+          <ul class="mt-1 list-disc space-y-1 pl-5 text-sm text-[--color-muted]">
+            {system.tradeoffs.map((t) => (
+              <li>{t}</li>
+            ))}
+          </ul>
+        </div>
+      </article>
+    ))}
+  </div>
+</BaseLayout>

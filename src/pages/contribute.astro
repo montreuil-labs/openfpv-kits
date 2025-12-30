@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const repoUrl = 'https://github.com/montreuil-labs/openfpv-kits';
+---
+
+<BaseLayout title="Contribute | OpenFPV Kits" description="Fast paths for edits, issues, and discussions.">
+  <div class="section-title">
+    <div>
+      <h2>Contribute</h2>
+      <p class="muted">Choose how you want to help.</p>
+    </div>
+  </div>
+
+  <div class="grid-responsive">
+    <article class="card space-y-2">
+      <h3 class="font-semibold">Quick edit</h3>
+      <p class="text-sm text-[--color-muted]">Fix typos or copy directly in GitHub.</p>
+      <a class="btn secondary" href={`${repoUrl}/edit/main/README.md`} target="_blank">Edit in GitHub</a>
+    </article>
+
+    <article class="card space-y-2">
+      <h3 class="font-semibold">Open an issue</h3>
+      <p class="text-sm text-[--color-muted]">Report problems or propose changes.</p>
+      <a class="btn secondary" href={`${repoUrl}/issues/new?title=Suggestion`} target="_blank">Open issue</a>
+    </article>
+
+    <article class="card space-y-2">
+      <h3 class="font-semibold">Start a discussion</h3>
+      <p class="text-sm text-[--color-muted]">Ask questions or vote with reactions.</p>
+      <a class="btn secondary" href={`${repoUrl}/discussions`} target="_blank">Open discussions</a>
+    </article>
+
+    <article class="card space-y-2">
+      <h3 class="font-semibold">Suggest catalog items</h3>
+      <p class="text-sm text-[--color-muted]">Share missing radios, goggles, drones, or accessories.</p>
+      <a class="btn secondary" href={`${repoUrl}/issues/new?title=Catalog%20item%20suggestion`} target="_blank">Suggest item</a>
+    </article>
+
+    <article class="card space-y-2">
+      <h3 class="font-semibold">Translations</h3>
+      <p class="text-sm text-[--color-muted]">Help add additional languages once copy stabilizes.</p>
+      <a class="btn secondary" href={`${repoUrl}/issues/new?title=Translation%20help`} target="_blank">Offer help</a>
+    </article>
+  </div>
+</BaseLayout>

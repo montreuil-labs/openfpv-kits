@@ -1,0 +1,130 @@
+---
+import "../styles/global.css";
+import { Moon, Sparkles, Sun } from "lucide-react";
+
+const {
+  title = "OpenFPV Kits",
+  description = "Community curated starter kits for getting into FPV.",
+} = Astro.props;
+
+const repoUrl = "https://github.com/montreuil-labs/openfpv-kits";
+const navLinks = [
+  { href: "/kits", label: "Kits" },
+  { href: "/builder", label: "Builder" },
+  { href: "/catalog", label: "Catalog" },
+  { href: "/compare", label: "Compare" },
+];
+---
+
+<html lang="en">
+  <head>
+    <script is:inline>
+      (() => {
+        const storageKey = 'openfpv-theme';
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const stored = localStorage.getItem(storageKey);
+        const current = stored || (prefersDark ? 'dark' : 'light');
+        document.documentElement.dataset.theme = current;
+        document.documentElement.style.backgroundColor = current === 'dark' ? '#0b1220' : '#f5f7fb';
+      })();
+    </script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <header class="border-b border-[--color-border] bg-[--color-surface]">
+      <div class="container py-4">
+        <div class="navbar">
+          <div class="flex items-center gap-3">
+            <a class="text-xl font-bold" href="/">OpenFPV Kits</a>
+            <button class="nav-toggle" type="button" aria-label="Toggle navigation" id="nav-toggle">
+              ☰
+            </button>
+          </div>
+          <nav class="nav-links" id="nav-links">
+            {navLinks.map((link) => (
+              <a class="nav-link" href={link.href}>{link.label}</a>
+            ))}
+          </nav>
+          <div class="nav-actions" id="nav-actions">
+            <a class="btn secondary inline-flex items-center gap-1" href="/contribute">
+              <Sparkles size={16} aria-hidden="true" className="icon" />
+              <span>Contribute</span>
+            </a>
+            <button class="btn secondary inline-flex items-center justify-center" type="button" id="theme-toggle" aria-label="Toggle theme">
+              <Sun size={16} aria-hidden="true" className="theme-icon theme-icon-sun" />
+              <Moon size={16} aria-hidden="true" className="theme-icon theme-icon-moon" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container py-8 md:py-10">
+      <slot />
+    </main>
+
+    <footer class="border-t border-[--color-border] bg-[--color-surface] py-6">
+      <div class="container flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div class="text-sm text-[--color-muted]">OpenFPV Kits — a collaborative FPV starter guide.</div>
+        <div class="flex flex-wrap gap-2 text-sm">
+          <a class="btn secondary" href={`${repoUrl}/issues/new`} target="_blank">Report an issue</a>
+          <a class="btn secondary" href={`${repoUrl}/discussions`} target="_blank">Start a discussion</a>
+        </div>
+      </div>
+    </footer>
+
+    <script is:inline>
+      const root = document.documentElement;
+      const storageKey = 'openfpv-theme';
+      const navToggle = document.getElementById('nav-toggle');
+      const navLinksEl = document.getElementById('nav-links');
+      const navActions = document.getElementById('nav-actions');
+      const themeBtn = document.getElementById('theme-toggle');
+      const mql = window.matchMedia('(prefers-color-scheme: dark)');
+
+      const setTheme = (mode, persist = true) => {
+        const next = mode === 'dark' ? 'dark' : 'light';
+        root.dataset.theme = next;
+        document.documentElement.style.backgroundColor = next === 'dark' ? '#0b1220' : '#f5f7fb';
+        if (persist) localStorage.setItem(storageKey, next);
+      };
+
+      const initTheme = () => {
+        const stored = localStorage.getItem(storageKey);
+        const system = mql.matches ? 'dark' : 'light';
+        setTheme(stored || system, false);
+      };
+
+      const cycleTheme = () => {
+        const current = root.dataset.theme === 'dark' ? 'dark' : 'light';
+        const next = current === 'dark' ? 'light' : 'dark';
+        setTheme(next);
+      };
+
+      initTheme();
+      themeBtn?.addEventListener('click', cycleTheme);
+
+      mql.addEventListener('change', () => {
+        if (!localStorage.getItem(storageKey)) {
+          setTheme(mql.matches ? 'dark' : 'light', false);
+        }
+      });
+
+      navToggle?.addEventListener('click', () => {
+        navLinksEl?.classList.toggle('open');
+        navActions?.classList.toggle('open');
+      });
+
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+          navLinksEl?.classList.remove('open');
+          navActions?.classList.remove('open');
+        }
+      });
+    </script>
+  </body>
+</html>

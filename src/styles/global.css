@@ -1,0 +1,229 @@
+@import 'tailwindcss';
+
+:root {
+  color-scheme: light;
+  --font-sans: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f5f7fb;
+  --color-ink: #0f172a;
+  --color-muted: #475569;
+  --color-accent: #2563eb;
+  --color-accent-strong: #1d4ed8;
+  --color-border: #e2e8f0;
+  --color-btn-text: #0b1220;
+  --radius-lg: 18px;
+  --radius-md: 12px;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-surface: #0b1220;
+  --color-surface-muted: #0a101d;
+  --color-ink: #e2e8f0;
+  --color-muted: #c7d2fe;
+  --color-accent: #8ab4ff;
+  --color-accent-strong: #a8c5ff;
+  --color-border: #1f2a44;
+  --color-btn-text: #0a101d;
+}
+
+:root[data-theme='auto'] {
+  color-scheme: light dark;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-surface-muted);
+  color: var(--color-ink);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+a {
+  color: inherit;
+}
+
+.container {
+  width: min(1100px, 100%);
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  box-shadow: none;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.65rem 1rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  background: var(--color-accent);
+  color: var(--color-btn-text);
+  border: 1px solid var(--color-accent-strong);
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.btn:hover,
+.btn:focus-visible {
+  background: var(--color-accent-strong);
+  border-color: var(--color-accent-strong);
+  color: var(--color-btn-text);
+}
+
+.btn.secondary {
+  background: transparent;
+  color: var(--color-ink);
+  border-color: var(--color-border);
+}
+
+.btn.secondary:hover,
+.btn.secondary:focus-visible {
+  background: var(--color-surface-muted);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.85rem;
+  border-radius: 999px;
+  background: #e5edff;
+  color: #1d4ed8;
+}
+
+.theme-icon-moon {
+  display: none;
+}
+
+[data-theme='dark'] .theme-icon-sun {
+  display: none;
+}
+
+[data-theme='dark'] .theme-icon-moon {
+  display: inline-flex;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.nav-link {
+  padding: 0.35rem 0.5rem;
+  border-radius: 10px;
+  color: var(--color-ink);
+  font-weight: 600;
+  border: none;
+  background: transparent;
+}
+
+.nav-link:hover,
+.nav-link:focus-visible {
+  background: var(--color-surface-muted);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nav-toggle {
+  display: none;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: 10px;
+  padding: 0.45rem 0.75rem;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-wrap: wrap;
+  }
+
+  .nav-links {
+    width: 100%;
+    flex-direction: column;
+    display: none;
+  }
+
+  .nav-links.open {
+    display: flex;
+  }
+
+  .nav-actions {
+    width: 100%;
+    justify-content: flex-start;
+    display: none;
+    margin-top: 0.5rem;
+  }
+
+  .nav-actions.open {
+    display: flex;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+}
+
+select {
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+select:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.grid-responsive {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.section-title h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.section-title .muted,
+.muted {
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}

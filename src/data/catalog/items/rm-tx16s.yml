@@ -1,0 +1,22 @@
+id: rm-tx16s
+type: radio
+brand: RadioMaster
+model: TX16S
+title: 'RadioMaster TX16S'
+summary: 'Full-size radio with big gimbals and lots of controls.'
+tags:
+  - edgetx
+  - upgrade
+  - full-size
+price:
+  currency: USD
+  typical_range: [180, 320]
+links:
+  search: 'https://www.google.com/search?q=RadioMaster+TX16S'
+requires:
+  - kind: battery
+    title: radio battery pack
+    notes: 'Varies by model/bundle.'
+also_see:
+  - rm-pocket
+  - rm-boxer

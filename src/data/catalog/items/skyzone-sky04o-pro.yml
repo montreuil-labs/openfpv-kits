@@ -1,0 +1,21 @@
+id: skyzone-sky04o-pro
+type: goggles
+brand: Skyzone
+model: SKY04O Pro
+title: 'Skyzone SKY04O Pro'
+summary: 'OLED binocular goggles that are a common mid-tier analog upgrade.'
+tags:
+  - analog
+  - oled
+  - upgrade
+price:
+  currency: USD
+  typical_range: [350, 520]
+links:
+  search: 'https://www.google.com/search?q=Skyzone+SKY04O+Pro'
+requires:
+  - kind: power
+    title: external power
+    notes: 'Usually 2S–3S LiPo.'
+also_see:
+  - skyzone-cobra-sd

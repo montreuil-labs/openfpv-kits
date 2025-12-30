@@ -1,0 +1,29 @@
+id: betafpv-meteor75-pro
+type: drone
+brand: BetaFPV
+model: Meteor75 Pro
+title: 'BetaFPV Meteor75 Pro'
+summary: 'Beginner-friendly tinywhoop for learning FPV fundamentals.'
+tags:
+  - tinywhoop
+  - 1s
+  - analog
+  - beginner
+  - indoor
+price:
+  currency: USD
+  typical_range: [110, 170]
+  note: 'Varies by receiver option and bundle.'
+links:
+  official: 'https://betafpv.com/'
+  search: 'https://www.google.com/search?q=BetaFPV+Meteor75+Pro'
+battery_options:
+  - title: 1S 450–550mAh (BT2.0)
+    typical_range_usd: [10, 22]
+    notes: 'Common starter range.'
+includes:
+  - kind: battery
+    title: starter batteries
+    qty: 2
+    notes: 'Some bundles include these.'
+also_see: []

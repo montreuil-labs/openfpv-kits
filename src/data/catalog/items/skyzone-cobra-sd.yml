@@ -1,0 +1,23 @@
+id: skyzone-cobra-sd
+type: goggles
+brand: Skyzone
+model: Cobra SD
+title: 'Skyzone Cobra SD (box goggles)'
+summary: 'Solid entry goggles for analog with a big screen and simple setup.'
+tags:
+  - analog
+  - beginner
+  - box-goggles
+  - value
+price:
+  currency: USD
+  typical_range: [150, 250]
+links:
+  official: 'https://www.skyzonefpv.com/'
+  search: 'https://www.google.com/search?q=Skyzone+Cobra+SD'
+requires:
+  - kind: power
+    title: external power
+    notes: 'Commonly 2S–3S LiPo or USB depending on revision.'
+also_see:
+  - skyzone-sky04o-pro

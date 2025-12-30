@@ -1,0 +1,48 @@
+id: entry-analog-tinywhoop
+title: 'Entry Analog — Tinywhoop'
+video_system: analog
+form_factor: tinywhoop
+skill_level: beginner
+items:
+  radio: rm-pocket
+  goggles: skyzone-cobra-sd
+  drone: betafpv-meteor75-pro
+  practice: fpv-simulator
+  batteries:
+    - batt-18650-2x
+    - 2s-lipo-goggles
+est_total:
+  currency: USD
+  typical_range: [380, 520]
+  note: 'Ranges vary by bundles.'
+pitch:
+  best_for:
+    - first FPV setup
+    - learning indoors + calm outdoor
+  tradeoffs:
+    - analog image quality
+    - tinywhoop feel isn’t for everyone
+upgrade_paths:
+  - id: mid-analog-goggles
+    title: Upgrade goggles
+    delta_usd_typical: [150, 270]
+    why: 'Comfort + receiver features + DVR.'
+    change:
+      replace:
+        goggles: skyzone-sky04o-pro
+  - id: bigger-drone-path
+    title: Fork to a bigger drone
+    delta_usd_typical: [120, 300]
+    why: 'More stability outdoors; different feel.'
+    change:
+      note: 'Swap tinywhoop for a 2–3 inch beginner build/bind-n-fly.'
+  - id: radio-upgrade
+    title: Upgrade radio
+    delta_usd_typical: [90, 200]
+    why: 'Bigger gimbals + more switches + comfort.'
+    change:
+      replace:
+        radio: rm-boxer
+checklist_refs:
+  - analog-starter
+notes_ref: entry-analog-tinywhoop

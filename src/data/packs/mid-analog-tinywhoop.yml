@@ -1,0 +1,26 @@
+id: mid-analog-tinywhoop
+title: 'Mid Analog — Tinywhoop'
+video_system: analog
+form_factor: tinywhoop
+skill_level: beginner_plus
+items:
+  radio: rm-pocket
+  goggles: skyzone-sky04o-pro
+  drone: betafpv-meteor75-pro
+  practice: fpv-simulator
+  batteries:
+    - batt-18650-2x
+    - 2s-lipo-goggles
+est_total:
+  currency: USD
+  typical_range: [520, 750]
+pitch:
+  best_for:
+    - starter analog with better viewing comfort
+  tradeoffs:
+    - still analog
+    - more spend early
+upgrade_paths: []
+checklist_refs:
+  - analog-starter
+notes_ref: entry-analog-tinywhoop

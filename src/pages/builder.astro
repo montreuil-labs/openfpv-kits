@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BuilderIsland from '../components/BuilderIsland';
+import { packItemIds } from '../lib/derived';
+import { getCatalogList, getPackList } from '../lib/data';
+
+const catalog = getCatalogList();
+const packSeeds = getPackList().map((pack) => ({ id: pack.id, items: packItemIds(pack) }));
+---
+
+<BaseLayout title="Builder | OpenFPV Kits" description="Build a kit and share a link for feedback.">
+  <BuilderIsland client:load catalog={catalog} packSeeds={packSeeds} />
+</BaseLayout>

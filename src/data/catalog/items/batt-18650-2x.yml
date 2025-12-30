@@ -1,0 +1,10 @@
+id: batt-18650-2x
+type: battery
+title: '2× 18650 batteries'
+summary: 'Common power source for many radios.'
+tags:
+  - radio-power
+price:
+  currency: USD
+  typical_range: [12, 30]
+  note: 'Varies by brand and capacity.'

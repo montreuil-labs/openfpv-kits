@@ -1,0 +1,22 @@
+id: rm-boxer
+type: radio
+brand: RadioMaster
+model: Boxer
+title: 'RadioMaster Boxer (ELRS)'
+summary: 'Ergonomic radio with larger gimbals and more switches.'
+tags:
+  - elrs
+  - edgetx
+  - upgrade
+price:
+  currency: USD
+  typical_range: [140, 200]
+links:
+  search: 'https://www.google.com/search?q=RadioMaster+Boxer+ELRS'
+requires:
+  - kind: battery
+    title: 18650 battery
+    qty: 2
+also_see:
+  - rm-pocket
+  - rm-tx16s

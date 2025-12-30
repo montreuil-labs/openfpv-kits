@@ -1,0 +1,13 @@
+id: fpv-simulator
+type: simulator
+title: 'FPV Simulator Practice'
+summary: 'Get 10+ hours in a sim before flying IRL.'
+tags:
+  - beginner
+  - training
+price:
+  currency: USD
+  typical_range: [0, 30]
+  note: 'Depends on sim.'
+links:
+  search: 'https://www.google.com/search?q=best+fpv+simulator'

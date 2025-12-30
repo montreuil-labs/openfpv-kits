@@ -1,0 +1,9 @@
+id: 2s-lipo-goggles
+type: battery
+title: '2S LiPo for goggles'
+summary: 'Common external power option for analog goggles.'
+tags:
+  - goggles-power
+price:
+  currency: USD
+  typical_range: [15, 35]

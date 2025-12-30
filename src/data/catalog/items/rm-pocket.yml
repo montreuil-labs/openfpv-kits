@@ -1,0 +1,26 @@
+id: rm-pocket
+type: radio
+brand: RadioMaster
+model: Pocket
+title: 'RadioMaster Pocket (ELRS)'
+summary: 'Compact EdgeTX radio that’s easy to recommend as an entry controller.'
+tags:
+  - elrs
+  - edgetx
+  - beginner
+  - portable
+price:
+  currency: USD
+  typical_range: [60, 100]
+  note: 'Varies by version and retailer.'
+links:
+  official: 'https://www.radiomasterrc.com/'
+  search: 'https://www.google.com/search?q=RadioMaster+Pocket+ELRS'
+requires:
+  - kind: battery
+    title: 18650 battery
+    qty: 2
+    notes: 'Often sold separately.'
+also_see:
+  - rm-boxer
+  - rm-tx16s

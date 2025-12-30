@@ -1,0 +1,30 @@
+id: analog-starter
+title: Analog starter checklist
+groups:
+  - id: before-you-buy
+    title: Before you buy
+    items:
+      - id: sim
+        text: 'Pick a simulator and commit to 10 hours before flying IRL.'
+      - id: protocol
+        text: 'Decide receiver protocol (ELRS recommended for modern starters).'
+  - id: first-day
+    title: First day setup
+    items:
+      - id: edgetx
+        text: 'Basic EdgeTX setup: model, rates preset, switch mapping.'
+      - id: bind
+        text: 'Bind radio → receiver (ELRS bind phrase or button bind).'
+      - id: scan
+        text: 'Goggles: scan channels and lock VTX channel.'
+      - id: battery-safety
+        text: 'Battery safety: charge, storage voltage, fire safety basics.'
+  - id: first-flight
+    title: First flight plan
+    items:
+      - id: spot
+        text: 'Pick a calm day + open space (or indoors for whoops).'
+      - id: steps
+        text: 'Takeoff → hover-ish → gentle turns → figure-8 → land.'
+      - id: stop
+        text: 'Stop early if you’re tense. Small wins compound.'

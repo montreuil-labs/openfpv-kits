@@ -1,0 +1,6 @@
+.astro
+node_modules
+dist
+pnpm-lock.yaml
+planning/
+.vscode/

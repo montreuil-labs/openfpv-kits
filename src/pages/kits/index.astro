@@ -1,0 +1,139 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { deriveRequirements, packItemIds } from '../../lib/derived';
+import { getCatalogList, getPackList } from '../../lib/data';
+
+const packs = getPackList();
+const catalog = getCatalogList();
+const url = new URL(Astro.request.url);
+const systemFilter = url.searchParams.get('system') ?? 'all';
+const formFilter = url.searchParams.get('form') ?? 'all';
+
+const formatRange = (values: [number, number]) => `$${Math.round(values[0])} – $${Math.round(values[1])}`;
+---
+
+<BaseLayout title="Kits | OpenFPV Kits" description="Curated starter kits with clear tradeoffs and upgrade paths.">
+  <div class="section-title">
+    <div>
+      <h2>Kits</h2>
+      <p class="muted">Curated starter kits. Open one, tweak it, share a link.</p>
+    </div>
+    <a class="btn secondary" href="/builder">Open builder</a>
+  </div>
+
+  <form class="card" id="kits-filter" method="get">
+    <div class="grid gap-3 md:grid-cols-3">
+      <label class="flex flex-col gap-1 text-sm text-[--color-muted]">
+        Video system
+        <select class="rounded-lg border border-[--color-border] bg-[--color-surface] text-[--color-ink] px-3 py-2" name="system">
+          <option value="all" selected={systemFilter === 'all'}>All systems</option>
+          <option value="analog" selected={systemFilter === 'analog'}>Analog</option>
+          <option value="hdzero" selected={systemFilter === 'hdzero'}>HDZero</option>
+          <option value="walksnail" selected={systemFilter === 'walksnail'}>Walksnail</option>
+          <option value="dji" selected={systemFilter === 'dji'}>DJI</option>
+        </select>
+      </label>
+      <label class="flex flex-col gap-1 text-sm text-[--color-muted]">
+        Form factor
+        <select class="rounded-lg border border-[--color-border] bg-[--color-surface] text-[--color-ink] px-3 py-2" name="form">
+          <option value="all" selected={formFilter === 'all'}>All form factors</option>
+          <option value="tinywhoop" selected={formFilter === 'tinywhoop'}>Tinywhoop</option>
+          <option value="2-3inch" selected={formFilter === '2-3inch'}>2–3 inch</option>
+          <option value="5inch" selected={formFilter === '5inch'}>5 inch</option>
+          <option value="cinewhoop" selected={formFilter === 'cinewhoop'}>Cinewhoop</option>
+          <option value="mixed" selected={formFilter === 'mixed'}>Mixed</option>
+        </select>
+      </label>
+      <div class="flex items-end justify-end text-sm text-[--color-muted]"></div>
+    </div>
+  </form>
+
+  <div class="mt-4 grid-responsive">
+    {packs.map((pack) => {
+      const ids = packItemIds(pack);
+      const reqs = deriveRequirements(ids);
+      const radio = pack.items.radio && catalog.find((c) => c.id === pack.items.radio);
+      const goggles = pack.items.goggles && catalog.find((c) => c.id === pack.items.goggles);
+      const drone = pack.items.drone && catalog.find((c) => c.id === pack.items.drone);
+
+      return (
+        <article class="card space-y-3" data-pack-system={pack.video_system} data-pack-form={pack.form_factor}>
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <h3 class="text-lg font-semibold">{pack.title}</h3>
+              <p class="text-sm text-[--color-muted]">{pack.form_factor} • {pack.video_system} • {pack.skill_level.replace('_', ' ')}</p>
+            </div>
+            <div class="text-sm font-semibold">{formatRange(pack.est_total.typical_range)}</div>
+          </div>
+
+          <ul class="text-sm text-[--color-muted] space-y-1">
+            {radio ? <li><span class="font-semibold text-[--color-ink]">Radio:</span> {radio.title}</li> : null}
+            {goggles ? <li><span class="font-semibold text-[--color-ink]">Goggles:</span> {goggles.title}</li> : null}
+            {drone ? <li><span class="font-semibold text-[--color-ink]">Drone:</span> {drone.title}</li> : null}
+            {reqs.length ? <li><span class="font-semibold text-[--color-ink]">Don't forget:</span> {reqs.map((r) => r.title).join(', ')}</li> : null}
+          </ul>
+
+          <div class="flex flex-wrap gap-2">
+            <a class="btn" href={`/kits/${pack.id}`}>Open kit</a>
+            <a class="btn secondary" href={`/builder?seed=${pack.id}`}>Open in builder</a>
+            <a
+              class="btn secondary"
+              href={`https://github.com/montreuil-labs/openfpv-kits/issues/new?title=Feedback:%20${encodeURIComponent(pack.title)}`}
+              target="_blank"
+            >
+              Suggest change
+            </a>
+          </div>
+        </article>
+      );
+    })}
+  </div>
+
+  <script is:inline>
+    (() => {
+      const form = document.getElementById('kits-filter');
+      const cards = Array.from(document.querySelectorAll('[data-pack-system]'));
+      const params = new URLSearchParams(window.location.search);
+
+      const setSelectValue = (name, value) => {
+        const sel = form?.querySelector(`select[name="${name}"]`);
+        if (sel) sel.value = value;
+      };
+
+      const getValue = (name) => {
+        const sel = form?.querySelector(`select[name="${name}"]`);
+        return sel && sel.value ? sel.value : 'all';
+      };
+
+      const applyFilters = () => {
+        const system = getValue('system');
+        const formFactor = getValue('form');
+
+        const nextParams = new URLSearchParams();
+        if (system !== 'all') nextParams.set('system', system);
+        if (formFactor !== 'all') nextParams.set('form', formFactor);
+        const query = nextParams.toString();
+        const nextUrl = query ? `${window.location.pathname}?${query}` : window.location.pathname;
+        window.history.replaceState({}, '', nextUrl);
+
+        cards.forEach((card) => {
+          const cardSystem = card.getAttribute('data-pack-system');
+          const cardForm = card.getAttribute('data-pack-form');
+          const matchSystem = system === 'all' || cardSystem === system;
+          const matchForm = formFactor === 'all' || cardForm === formFactor;
+          card.classList.toggle('hidden', !(matchSystem && matchForm));
+        });
+      };
+
+      if (form) {
+        const system = params.get('system') || 'all';
+        const formFactor = params.get('form') || 'all';
+        setSelectValue('system', system);
+        setSelectValue('form', formFactor);
+        form.querySelectorAll('select').forEach((sel) => sel.addEventListener('change', applyFilters));
+      }
+
+      applyFilters();
+    })();
+  </script>
+</BaseLayout>
