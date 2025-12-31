@@ -25,6 +25,76 @@ type Props = {
   packSeeds?: { id: string; items: string[] }[];
 };
 
+type Category = {
+  id: string;
+  label: string;
+  types: string[];
+  mode: 'single' | 'multi';
+  initiallyOpen?: boolean;
+  hint?: string;
+};
+
+const categories: Category[] = [
+  {
+    id: 'radio',
+    label: 'Radio',
+    types: ['radio'],
+    mode: 'single',
+    initiallyOpen: true,
+    hint: 'Pick one controller.',
+  },
+  {
+    id: 'goggles',
+    label: 'Goggles',
+    types: ['goggles'],
+    mode: 'single',
+    initiallyOpen: true,
+    hint: 'Pick one viewer.',
+  },
+  {
+    id: 'drone',
+    label: 'Drone',
+    types: ['drone'],
+    mode: 'single',
+    initiallyOpen: true,
+    hint: 'Pick one airframe.',
+  },
+  {
+    id: 'charger',
+    label: 'Charger',
+    types: ['charger'],
+    mode: 'single',
+    initiallyOpen: true,
+    hint: 'Pick one charger.',
+  },
+  {
+    id: 'simulator',
+    label: 'Practice / Simulator',
+    types: ['simulator'],
+    mode: 'single',
+    initiallyOpen: true,
+    hint: 'Optional sim time.',
+  },
+  {
+    id: 'batteries',
+    label: 'Batteries',
+    types: ['battery'],
+    mode: 'multi',
+    initiallyOpen: false,
+    hint: 'Add what you need.',
+  },
+  {
+    id: 'accessories',
+    label: 'Accessories',
+    types: ['accessory'],
+    mode: 'multi',
+    initiallyOpen: false,
+    hint: 'Extras and spares.',
+  },
+];
+
+const VIDEO_SYSTEM_TAGS = ['analog', 'hdzero', 'walksnail', 'dji'];
+
 function uniq(list: string[]) {
   return Array.from(new Set(list));
 }
@@ -71,6 +141,11 @@ function sumRange(items: string[], catalog: CatalogItemInput[]) {
   );
 }
 
+function getVideoSystemTag(tags: string[]) {
+  const found = tags.find((tag) => VIDEO_SYSTEM_TAGS.includes(tag));
+  return found ? found.toUpperCase() : null;
+}
+
 export function BuilderIsland({
   catalog,
   seedItems = [],
@@ -81,6 +156,57 @@ export function BuilderIsland({
   const [shareUrl, setShareUrl] = useState('');
   const hydrated = React.useRef(false);
   const lastSelectedKey = React.useRef('__init__');
+  const seeded = React.useRef(false);
+  const [expanded, setExpanded] = useState<Set<string>>(
+    () => new Set(categories.filter((c) => c.initiallyOpen).map((c) => c.id)),
+  );
+
+  const catalogMap = useMemo(
+    () => new Map(catalog.map((item) => [item.id, item])),
+    [catalog],
+  );
+
+  const categoryByType = useMemo(() => {
+    const map = new Map<string, Category>();
+    categories.forEach((cat) => {
+      cat.types.forEach((type) => map.set(type, cat));
+    });
+    return map;
+  }, []);
+
+  const filteredCatalog = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return catalog;
+    return catalog.filter((item) =>
+      `${item.title} ${item.summary} ${item.tags.join(' ')}`
+        .toLowerCase()
+        .includes(q),
+    );
+  }, [catalog, query]);
+
+  const itemsByCategory = useMemo(() => {
+    const map = new Map<string, CatalogItemInput[]>();
+    filteredCatalog.forEach((item) => {
+      const cat = categoryByType.get(item.type);
+      if (!cat) return;
+      const next = map.get(cat.id) ?? [];
+      map.set(cat.id, [...next, item]);
+    });
+    return map;
+  }, [filteredCatalog, categoryByType]);
+
+  const selectedByCategory = useMemo(() => {
+    const map = new Map<string, CatalogItemInput[]>();
+    selected.forEach((id) => {
+      const item = catalogMap.get(id);
+      if (!item) return;
+      const cat = categoryByType.get(item.type);
+      if (!cat) return;
+      const next = map.get(cat.id) ?? [];
+      map.set(cat.id, [...next, item]);
+    });
+    return map;
+  }, [selected, catalogMap, categoryByType]);
 
   useEffect(() => {
     hydrated.current = true;
@@ -94,6 +220,9 @@ export function BuilderIsland({
 
   // Seed once from URL or provided pack
   useEffect(() => {
+    if (seeded.current) return;
+    seeded.current = true;
+
     const params = new URLSearchParams(window.location.search);
     const fromUrl = params.get('items');
     if (fromUrl) {
@@ -114,7 +243,7 @@ export function BuilderIsland({
     if (seedItems.length) {
       setSelected(uniq(seedItems));
     }
-  }, []);
+  }, [packSeeds, seedItems]);
 
   // Sync URL when selection changes
   useEffect(() => {
@@ -134,16 +263,6 @@ export function BuilderIsland({
     setShareUrl(window.location.origin + next);
   }, [selected]);
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return catalog;
-    return catalog.filter((item) =>
-      `${item.title} ${item.summary} ${item.tags.join(' ')}`
-        .toLowerCase()
-        .includes(q),
-    );
-  }, [catalog, query]);
-
   const totals = useMemo(
     () => sumRange(selected, catalog),
     [selected, catalog],
@@ -154,6 +273,44 @@ export function BuilderIsland({
   );
 
   const totalLabel = selected.length ? formatRange(totals) : '';
+
+  function toggleExpanded(id: string) {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
+
+  function clearCategory(cat: Category) {
+    setSelected((prev) =>
+      prev.filter((id) => {
+        const item = catalogMap.get(id);
+        if (!item) return false;
+        return !cat.types.includes(item.type);
+      }),
+    );
+  }
+
+  function toggleItem(item: CatalogItemInput) {
+    const cat = categoryByType.get(item.type);
+    if (!cat) return;
+
+    setSelected((prev) => {
+      const isSelected = prev.includes(item.id);
+      if (cat.mode === 'single') {
+        const withoutType = prev.filter((id) => {
+          const cur = catalogMap.get(id);
+          return cur && cur.type !== item.type;
+        });
+        return isSelected ? withoutType : uniq([...withoutType, item.id]);
+      }
+
+      return isSelected
+        ? prev.filter((id) => id !== item.id)
+        : uniq([...prev, item.id]);
+    });
+  }
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
@@ -170,48 +327,99 @@ export function BuilderIsland({
             placeholder="Search catalog (e.g., pocket, cobra, 18650)…"
             className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-3 py-2 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-muted)]"
           />
-          <div className="mt-3 max-h-72 space-y-2 overflow-auto">
-            {filtered.slice(0, 30).map((item) => {
-              const isSelected = selected.includes(item.id);
+
+          <div className="mt-3 space-y-3">
+            {categories.map((cat) => {
+              const isOpen = expanded.has(cat.id);
+              const items = itemsByCategory.get(cat.id) ?? [];
               return (
-                <button
-                  key={item.id}
-                  className={`w-full rounded-lg border px-3 py-2 text-left transition ${
-                    isSelected
-                      ? 'border-[var(--color-accent)] bg-[var(--color-surface-muted)]'
-                      : 'border-[var(--color-border)] bg-[var(--color-surface)]'
-                  }`}
-                  onClick={() => {
-                    setSelected((prev) =>
-                      prev.includes(item.id)
-                        ? prev.filter((id) => id !== item.id)
-                        : uniq([...prev, item.id]),
-                    );
-                  }}
-                  type="button"
+                <div
+                  key={cat.id}
+                  className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-muted)]"
                 >
-                  <div className="flex items-start justify-between gap-3">
+                  <button
+                    type="button"
+                    onClick={() => toggleExpanded(cat.id)}
+                    className="flex w-full items-center justify-between px-3 py-2 text-left"
+                  >
                     <div>
-                      <p className="font-semibold text-[var(--color-ink)]">
-                        {item.title}
+                      <p className="text-sm font-semibold text-[var(--color-ink)]">
+                        {cat.label}
                       </p>
                       <p className="text-xs text-[var(--color-muted)]">
-                        {item.summary}
+                        {cat.hint}
                       </p>
-                      <div className="mt-1 flex flex-wrap gap-1 text-[10px] text-[var(--color-muted)]">
-                        <span className="badge">{item.type}</span>
-                        {item.tags.slice(0, 3).map((tag) => (
-                          <span key={tag} className="badge">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
                     </div>
-                    <p className="text-xs font-semibold text-[var(--color-ink)]">
-                      {formatRange(item.price.typical_range)}
-                    </p>
-                  </div>
-                </button>
+                    <span className="text-xs text-[var(--color-muted)]">
+                      {items.length
+                        ? `${items.length} item${items.length > 1 ? 's' : ''}`
+                        : 'Empty'}
+                    </span>
+                  </button>
+
+                  {isOpen && (
+                    <div className="space-y-2 border-t border-[var(--color-border)] px-3 py-3">
+                      {items.length === 0 && (
+                        <p className="text-xs text-[var(--color-muted)]">
+                          No items found.
+                        </p>
+                      )}
+                      {items.map((item) => {
+                        const isSelected = selected.includes(item.id);
+                        const video = getVideoSystemTag(item.tags);
+                        return (
+                          <button
+                            key={item.id}
+                            className={`w-full rounded-lg border px-3 py-3 text-left transition ${
+                              isSelected
+                                ? 'border-[var(--color-accent)] bg-[var(--color-surface)]'
+                                : 'border-[var(--color-border)] bg-[var(--color-surface)]'
+                            }`}
+                            onClick={() => toggleItem(item)}
+                            type="button"
+                          >
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="space-y-1">
+                                <p className="font-semibold text-[var(--color-ink)]">
+                                  {item.title}
+                                </p>
+                                <p className="text-xs text-[var(--color-muted)]">
+                                  {item.summary}
+                                </p>
+                                <div className="flex flex-wrap gap-1 text-[10px] text-[var(--color-muted)]">
+                                  {video ? (
+                                    <span className="badge">{video}</span>
+                                  ) : null}
+                                  {item.tags.slice(0, 3).map((tag) => (
+                                    <span key={tag} className="badge">
+                                      {tag}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-xs font-semibold text-[var(--color-ink)]">
+                                  {formatRange(item.price.typical_range)}
+                                </p>
+                                {isSelected ? (
+                                  <span className="inline-block text-[10px] font-semibold text-[var(--color-accent)]">
+                                    Selected
+                                  </span>
+                                ) : (
+                                  <span className="inline-block text-[10px] text-[var(--color-muted)]">
+                                    {cat.mode === 'single'
+                                      ? 'Add / Replace'
+                                      : 'Add'}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>
@@ -249,30 +457,68 @@ export function BuilderIsland({
           </p>
         )}
 
-        <div className="space-y-2">
-          {selected.map((id) => {
-            const item = catalog.find((c) => c.id === id);
-            if (!item) return null;
+        <div className="space-y-3">
+          {categories.map((cat) => {
+            const items = selectedByCategory.get(cat.id) ?? [];
             return (
               <div
-                key={id}
-                className="flex items-start justify-between gap-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
+                key={cat.id}
+                className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3"
               >
-                <div>
-                  <p className="font-semibold">{item.title}</p>
-                  <p className="text-xs text-[var(--color-muted)]">
-                    {item.type}
-                  </p>
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-semibold">{cat.label}</p>
+                    <p className="text-xs text-[var(--color-muted)]">
+                      {cat.mode === 'single'
+                        ? items.length
+                          ? 'Selected'
+                          : 'Pick one'
+                        : `${items.length} selected`}
+                    </p>
+                  </div>
+                  {items.length ? (
+                    <button
+                      className="btn secondary"
+                      type="button"
+                      onClick={() => clearCategory(cat)}
+                    >
+                      Clear
+                    </button>
+                  ) : null}
                 </div>
-                <button
-                  className="btn secondary"
-                  type="button"
-                  onClick={() =>
-                    setSelected((prev) => prev.filter((x) => x !== id))
-                  }
-                >
-                  Remove
-                </button>
+
+                {items.length ? (
+                  <div className="mt-2 space-y-2">
+                    {items.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex items-start justify-between gap-3 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-3 py-2"
+                      >
+                        <div>
+                          <p className="font-semibold">{item.title}</p>
+                          <p className="text-xs text-[var(--color-muted)]">
+                            {item.type}
+                          </p>
+                        </div>
+                        <button
+                          className="btn secondary"
+                          type="button"
+                          onClick={() =>
+                            setSelected((prev) =>
+                              prev.filter((id) => id !== item.id),
+                            )
+                          }
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="mt-2 text-xs text-[var(--color-muted)]">
+                    Not selected.
+                  </p>
+                )}
               </div>
             );
           })}
